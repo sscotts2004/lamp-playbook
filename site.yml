@@ -1,0 +1,11 @@
+---
+- name: Installs wordpress, mariadb, nginx,php
+  hosts: wordpress-server
+  remote_user: root
+
+  roles:
+    - common
+    - mariadb
+    - nginx
+    - php-fpm
+    - wordpress
