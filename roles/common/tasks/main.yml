@@ -1,0 +1,22 @@
+---
+- name: Copy the nginx repo file
+  copy: src=nginx.repo dest=/etc/yum.repos.d/
+
+- name: Copy the epel repo file
+  copy: src=epel.repo dest=/etc/yum.repos.d/
+
+- name: Copy the remi repo file
+  copy: src=remi.repo dest=/etc/yum.repos.d/
+
+
+- name: Create the GPG key for EPEL Repo on the target machine
+  copy: src=RPM-GPG-KEY-EPEL-7 dest=/etc/pki/rpm-gpg
+
+- name: Create the GPG key for REMI Repo on the target machine
+  copy: src=RPM-GPG-KEY-remi dest=/etc/pki/rpm-gpg
+
+- name: Crate the Key for Nginx repo on the target server
+  copy: src=RPM-GPG-KEY-NGINX dest=/etc/pki/rpm-gpg
+
+- name: Firewall Service to be kept on becasue we are going to whitelist ports in the other roles
+  serviceL name=firewalld state=started enabled=yes
