@@ -19,4 +19,4 @@
   copy: src=RPM-GPG-KEY-NGINX dest=/etc/pki/rpm-gpg
 
 - name: Firewall Service to be kept on becasue we are going to whitelist ports in the other roles
-  serviceL name=firewalld state=started enabled=yes
+  service: name=firewalld state=started enabled=yes

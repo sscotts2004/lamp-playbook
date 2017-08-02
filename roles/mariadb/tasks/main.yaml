@@ -1,0 +1,25 @@
+---
+
+- name: Install the mariadb server
+  yum: name={{ item }} state=installed
+  with_items:
+    - mariadb-server 
+    - mysql-python
+    - libselinux-python
+    - libsemanage-python
+
+- name: Create the custom mysql configurtion file
+  template: src=my.cnf.j2 dest=/etc/my.cnf
+
+- name: Make sure mariadb is running and enabled at boot
+  service: name=mariadb state=started enabled=yes
+
+- name: Enable the mysql port
+  firewalld: port={{ mysql_port }}/tcp permanent=true state=enabled immediate=yes
+  ignore_errors=yes
+
+- name: Make sure the mysql log file is present
+  file: path=/var/log/mysqld.log state=touch owner=mysql mode=0775
+
+- name:- Allow mysql to run when se linux is enabled by defining the mysql selinux parameter
+  seboolean: name=mysql_connect_any state=true persistent=yes

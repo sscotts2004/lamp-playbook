@@ -1,0 +1,12 @@
+---
+- name: Install nginx
+  yum: name=nginx state=present
+
+- name: Server out the config file for nginx
+  template: src=default.conf dest=/etc/conf.d/default.conf
+
+- name: manage the http service using ansible
+  service: name:nginx state=started enabled=yes
+
+- name: enable the firewall port 
+  firewalld: port={{ nginx_port }}/tcp peramanent=true state=enabled immediate=yes
