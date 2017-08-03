@@ -1,0 +1,21 @@
+---
+- name: Installing php and its dependencies.
+  yum name={{ item }} state=install
+  with_items:
+    - php
+    - php-fpm
+    - php-enchant 
+    - php-IDNA_Convert
+    - php-mbstring
+    - php-mysql
+    - php-PHPMailer
+    - php-process
+    - php-simplepie
+    - php-xml
+
+- name: Disable the default php pool here
+  command: mv /etc/php-fpm.d/www.conf /etc/php-fpm.d/www.disabled creates=/etc/php-fpm.d/www.disabled
+
+- name: Copy the wordpress config file 
+  template: src=wordpress.conf dest=/etc/php-fpm.d/
+  notify: restart php-fpm
