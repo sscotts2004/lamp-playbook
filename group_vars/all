@@ -4,3 +4,6 @@ nginx_port: 80
 server_hostname: server.example.com
 wp_version: 4.6
 wp_sha256sum: 
+wp_db_name: wordpress
+wp_db_user: wordpress
+wp_db_password: secret

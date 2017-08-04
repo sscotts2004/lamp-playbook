@@ -1,5 +1,72 @@
 --- 
 - name: Download Wordpress
   get_url: url=http://wordpress.org/wordpress-{{ wp_version }}.tar.gz dest=/srv/wordpress-{{ wp_version }}.tar.gz sha256sum="{{} wp_sha256sum }"
+
 - name: Extract archive
   command: chdir = /srv/ tar xvf wordpress-{{ wp_version }}.tar.gz  creates=/srv/wordpress
+
+- name: Add group for word-press
+  group: name=wordpress
+
+- name: Add a user for the application 
+  user: name=wordpress group=wordpress home=/srv/wordpress
+
+- name: Create wordpress database
+  mysql_db: name={{ wp_db_name }} state=present
+
+- name: Create wordpress user and password for database
+  mysql_user: name={{ wp_db_user }}
+
+- name: Serve out the wp-config file from templates folder
+  template: src=wp-config.php dest=/srv/wordpress
+
+
+- name: Give wordpress user the recursive permissions of the  srv directory
+  file: path=/srv/wordpress/ owner=wordpress group=wordpress recursive=yes state=directory
+
+- name: Install the SEManage package to manage the policies of Selinux on the system
+  yum: pkg=policycoreutils-python state=present
+
+- name: Set the se linux policy for wordpress directory to be allowed to server http content
+  command: semanage fcontext -a -t httpd_syscontent_t "/srv/wordpress(/.*)?"
+
+- name: SeLinux policy for Wordpress wp-config
+  command: semanage fcontext -a -t httpd_sys_scrtip_exec_t "/srv/wordpress/wp-config\.php"
+
+- name: Allow the wordpress directory to be accesses and php files to be accessed
+  command: semanage fcontext -a -t httpd_sys_rw_content_t "/srv/wordpress/wp-content(/.*)?"
+
+- name: Allow all php files to be executed by SeLinux
+  command: semanage fcontext -a -t httpd_sys_scrtip_exec_t "/srv/wordpress/.*\.php"
+
+- name: Allow the upgrade to go smooth 
+  command: semanage fcontext -a -t httpd_sys_rw_content_t "/srv/wordpress/wp-content/upgrade(/.*)?"
+
+- name: Allow uploads to be permitted by SeLinux
+  command: semanage fcontext -a -t httpd_sys_rw_content_t "/srv/wordpress/wp-content/uploads/.*\.php"
+
+- name: Allow custom css files to be uploaded by the end users
+  command: semanage fcontext -a -t httpd_sys_script_exect_t "/srv/wordpress/wp-includes/.\*.php"
+
+- name: apply the rules we defined for SeLinux
+  command: restorecon -Rv /srv/wordpress
+
+- name: Start php-fpm Service
+  service: name=php-fpm state=started enabled=yes
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
