@@ -15,8 +15,7 @@
   service: name=mariadb state=started enabled=yes
 
 - name: Enable the mysql port
-  firewalld: port={{ mysql_port }}/tcp permanent=true state=enabled immediate=yes
-  ignore_errors=yes
+  firewalld: port={{ mysql_port }}/tcp permanent=true state=enabled immediate=yes ignore_errors=yes
 
 - name: Make sure the mysql log file is present
   file: path=/var/log/mysqld.log state=touch owner=mysql mode=0775
